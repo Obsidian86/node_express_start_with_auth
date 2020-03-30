@@ -1,4 +1,4 @@
-const User = require('../schema/user')
+const User = require('../../schema/user')
 
 let adminHandler = {}
 
@@ -11,6 +11,12 @@ adminHandler.getUserByUsername = async (req, res) => {
     const username = req.params.username
     const getUsers = await User.findOne({username})
     res.json({users: getUsers})
+}
+
+adminHandler.deleteUser = async (req, res) => {
+    const username = req.params.username
+    await User.findOneAndDelete({username})
+    res.json({message: 'Deleted user: ' + username})
 }
 
 adminHandler.updateUser = async (req, res, next) => {
@@ -30,8 +36,6 @@ adminHandler.updateUser = async (req, res, next) => {
             message: error.message || 'Error updating user'
         }) 
     }
-
-
 }
 
 module.exports = adminHandler

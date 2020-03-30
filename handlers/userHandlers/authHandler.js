@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt')
-const User = require('../schema/user')
-const getToken = require('../utilities/tokens')
+const User = require('../../schema/user')
+const getToken = require('../../utilities/tokens')
 const jwt = require('jsonwebtoken')
 
 let authHandler = {}
@@ -10,7 +10,7 @@ authHandler.registerUser = async (req, res, next) => {
         const { username, email, password } = req.body
         const newUser = await User.create({username, email, password})
         const {userObject, token} = getToken({username, _id: newUser._id})
-        res.status(200).json({user: {...userObject, userType: newUser.user_type}, token})
+        res.status(200).json({user: {...userObject, email, userType: newUser.user_type}, token})
     } catch (error) {
         let message = 'Unable to create user'
         if(error.code === 11000){
@@ -33,7 +33,7 @@ authHandler.loginUser = async(req, res, next) => {
             if( !passMatch ) throw new Error("Incorrect password")
             else {
                 const {userObject, token} = getToken({username, _id: getUser._id})
-                res.status(200).json({user: {...userObject, userType: getUser.user_type}, token})
+                res.status(200).json({user: {...userObject, email: getUser.email, userType: getUser.user_type}, token})
             }
         } else throw new Error("No user found")
     } catch (error) {
